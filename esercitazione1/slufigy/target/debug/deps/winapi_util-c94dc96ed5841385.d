@@ -1,0 +1,10 @@
+C:\Users\fedeb\OneDrive\Documenti\poliTO\4anno\programmazione di sistema\malnati\Rust\esercitazione1\slufigy\target\debug\deps\winapi_util-c94dc96ed5841385.rmeta: C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\lib.rs C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\console.rs C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\file.rs C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\win.rs
+
+C:\Users\fedeb\OneDrive\Documenti\poliTO\4anno\programmazione di sistema\malnati\Rust\esercitazione1\slufigy\target\debug\deps\libwinapi_util-c94dc96ed5841385.rlib: C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\lib.rs C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\console.rs C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\file.rs C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\win.rs
+
+C:\Users\fedeb\OneDrive\Documenti\poliTO\4anno\programmazione di sistema\malnati\Rust\esercitazione1\slufigy\target\debug\deps\winapi_util-c94dc96ed5841385.d: C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\lib.rs C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\console.rs C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\file.rs C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\win.rs
+
+C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\lib.rs:
+C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\console.rs:
+C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\file.rs:
+C:\Users\fedeb\.cargo\registry\src\github.com-1ecc6299db9ec823\winapi-util-0.1.5\src\win.rs:

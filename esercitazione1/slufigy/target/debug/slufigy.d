@@ -1,0 +1,1 @@
+C:\Users\fedeb\OneDrive\Documenti\poliTO\4anno\programmazione\ di\ sistema\malnati\Rust\esercitazione1\slufigy\target\debug\slufigy.exe: C:\Users\fedeb\OneDrive\Documenti\poliTO\4anno\programmazione\ di\ sistema\malnati\Rust\esercitazione1\slufigy\src\main.rs
