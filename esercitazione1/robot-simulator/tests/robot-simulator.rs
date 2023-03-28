@@ -1,5 +1,4 @@
 use robot_simulator::*;
-
 #[test]
 fn robots_are_created_with_position_and_direction() {
     let robot = Robot::new(0, 0, Direction::North);
@@ -149,28 +148,27 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(version, long_about = None)]
 struct Args {
-/// xposition
-    #[arg(short, long, )]
-    xpos: i32,
+///xposition
+    #[arg(short, long)]
+    xpos: String,
 ///yposition
     #[arg(short, long)]
-    ypos: i32,
+    ypos: String,
 ///direction
     #[arg(short, long)]
-    dir: char,
+    dir: String,
 ///path
     #[arg(short, long)]
-    path:String ,
+    path:String,
     
     #[arg(short, long, default_value_t = 4)]
     count: u8,
 }
 
-#[test]
 fn main (){
     let args = Args::parse();
     
-    let direction=match args.dir{
+    let direction=match args.dir.parse::<char>().unwrap(){
         'N'=>Direction::North,
         'E'=>Direction::East,
         'S'=>Direction::South,
@@ -180,7 +178,7 @@ fn main (){
             Direction::North
         }
     };
-    let robot=Robot::new(args.xpos, args.ypos, direction);
+    let robot=Robot::new(args.xpos.parse::<i32>().unwrap(), args.ypos.parse::<i32>().unwrap(), direction);
     let robot_final=robot.instructions(args.path.as_str());
     println!("{} {} {}",robot_final.position().0, robot_final.position().1, match robot_final.direction(){
         Direction::North=>'N',

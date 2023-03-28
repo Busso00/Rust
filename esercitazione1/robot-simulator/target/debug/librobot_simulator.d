@@ -1,0 +1,1 @@
+C:\Users\fedeb\OneDrive\Documenti\poliTO\4anno\programmazione\ di\ sistema\malnati\Rust\esercitazione1\robot-simulator\target\debug\librobot_simulator.rlib: C:\Users\fedeb\OneDrive\Documenti\poliTO\4anno\programmazione\ di\ sistema\malnati\Rust\esercitazione1\robot-simulator\src\lib.rs

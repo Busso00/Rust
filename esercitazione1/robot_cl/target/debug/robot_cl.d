@@ -1,0 +1,1 @@
+C:\Users\fedeb\OneDrive\Documenti\poliTO\4anno\programmazione\ di\ sistema\malnati\Rust\esercitazione1\robot_cl\target\debug\robot_cl.exe: C:\Users\fedeb\OneDrive\Documenti\poliTO\4anno\programmazione\ di\ sistema\malnati\Rust\esercitazione1\robot_cl\src\main.rs
