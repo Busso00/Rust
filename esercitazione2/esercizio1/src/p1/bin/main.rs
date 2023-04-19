@@ -68,7 +68,7 @@ fn main() {
         let sd = SensorData {
             seq : i,
             values : rng.gen(),
-            timestamp : i*1000
+            timestamp : //only to be more realistic, not required
         };
         //debug output
         println!("{:?}",sd);
