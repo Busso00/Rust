@@ -429,4 +429,6 @@ fn main() {
     println!("file: {:?}", file);
     let file=root.get_file("fileroot");
     println!("file: {:?}", file);
+    //test search
+    
 }
