@@ -35,6 +35,12 @@ struct FileSystem {
     root: Dir,
 }
 
+#[derive(Debug)]
+struct MatchResult<'a>{
+    queries: Vec<&'a str>,
+    nodes: Vec<&'a mut Node>
+}
+
 fn current_time() -> Duration {
     let start = SystemTime::now();
     return start
@@ -328,7 +334,107 @@ impl FileSystem {
                 }
             },
             Err(e) => {eprintln!("{}: {:?}",e,path); None}
-        }   
+        } 
+    }
+
+    fn search<'a>(&'a mut self,queries: &[&'a str]) -> Option<MatchResult<'a>>{
+
+        let mut mr=MatchResult{queries:Vec::new(),nodes:Vec::new()};
+        let mut unvisited_dir = vec![&mut self.root];
+
+        for query in queries{
+            let mut query_s = query.split(":").collect::<Vec<&str>>();
+            mr.queries.push(query);
+
+            while unvisited_dir.len()>0{
+                let mut current = unvisited_dir.remove(0);
+                for child in current.children.iter_mut(){
+                    match query_s[0]{
+                        "name"=>{
+                            match child {
+                                Node::File(file)=>{
+                                    if file.name==query_s[1]{
+                                        mr.nodes.push(child)
+                                    }
+                                },
+                                Node::Dir(dir)=>unvisited_dir.push(dir)   
+                            };
+                        },
+                        
+                        "content"=>{
+                            match child {
+                                Node::File(file)=>{
+                                    if String::from_utf8_lossy(&file.content[..]).contains(query_s[1]){
+                                        mr.nodes.push(child)
+                                    }
+                                },
+                                Node::Dir(dir)=>unvisited_dir.push(dir)
+                            }
+                        },
+                    
+                        "larger"=>{
+                            let value=query_s[1].parse::<usize>().unwrap();
+                            match child {
+                                Node::File(file)=>{
+                                    if file.content.len() > value{
+                                        mr.nodes.push(child)
+                                    }
+                                },
+                                Node::Dir(dir)=>unvisited_dir.push(dir)   
+                            };
+                        },
+                        "smaller"=>{
+                            let value=query_s[1].parse::<usize>().unwrap();
+                            match child {
+                                Node::File(file)=>{
+                                    if file.content.len() < value{
+                                        mr.nodes.push(child)
+                                    }
+                                },
+                                Node::Dir(dir)=>unvisited_dir.push(dir)   
+                            };
+                        },
+                        "newer"=>{
+                            let value=query_s[1].parse::<u64>().unwrap();
+                            match child {
+                                Node::File(file)=>{
+                                    if file.creation_time < value{
+                                        mr.nodes.push(child)
+                                    }
+                                },
+                                Node::Dir(dir)=>unvisited_dir.push(dir)   
+                            };
+                        },
+                        "older"=>{
+                            let value=query_s[1].parse::<u64>().unwrap();
+                            match child {
+                                Node::File(file)=>{
+                                    if file.creation_time > value{
+                                        mr.nodes.push(child)
+                                    }
+                                },
+                                Node::Dir(dir)=>unvisited_dir.push(dir)   
+                            };
+                        },
+                        
+                        _=>{
+                            eprintln!("Invalid query"); 
+                            return None;
+                        }
+                    };
+
+                }
+            }
+
+        }
+        if mr.nodes.len()>0 {
+            //elimina duplicati per indirizzo
+            //self.nodes=self.nodes.dedup();
+            return Some(mr);
+        }else{
+            println!("No file found");
+            return None;
+        }
     }
 }
 
@@ -391,6 +497,12 @@ fn main() {
         creation_time:1000,
         type_:FileType::Binary
     };
+    let file8 = File{
+        name: String::from("filetxt.txt"),
+        content: vec![0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49],
+        creation_time:1000,
+        type_:FileType::Text
+    };
     //test new_file
     root.new_file("f1/nf11",file1);
     root.new_file("nf3",file2);
@@ -399,6 +511,7 @@ fn main() {
     root.new_file("f1/nf11",file5);
     root.new_file("nf3",file6);
     root.new_file("",file7);
+    root.new_file("f2/f21/f211/nf5",file8);
     println!("root after new_file: {:?}", root);
     //test rm_dir
     root.rm_dir("nf3");
@@ -430,5 +543,13 @@ fn main() {
     let file=root.get_file("fileroot");
     println!("file: {:?}", file);
     //test search
-    
+    println!("test query multiple larger 5, newer 999");
+    let args=["larger:5","newer:1001"];
+    root.search(&args);
+    let args=["name:prova5"];
+    let res=root.search(&args);
+    println!("{:?}",res);
+    let args=["content:ABCDEFGHI"];
+    let res=root.search(&args);
+    println!("{:?}",res);
 }
