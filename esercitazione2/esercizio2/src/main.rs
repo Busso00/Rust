@@ -3,13 +3,13 @@ use std::io::Read;
 use std::path::*;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug)]
 enum FileType {
     Text,
     Binary,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct File {
     name: String,
     content: Vec<u8>, // max 1000 bytes, rest of the file truncated
@@ -17,20 +17,20 @@ struct File {
     type_: FileType,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct Dir{
     name: String,
     creation_time: u64,
     children: Vec<Node>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 enum Node{
     File(File),
     Dir(Dir),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct FileSystem {
     root: Dir,
 }
@@ -49,34 +49,30 @@ fn current_time() -> Duration {
 }
 
 impl FileSystem {
+
     fn new() -> FileSystem {
         let root = FileSystem {
             root: Dir {
                 name: String::from("root"),
                 creation_time: current_time().as_secs(),
                 children: Vec::new(),
-            },
+            }
         };
-
         return root;
     }
 
     fn read_dir_r(path: &str, depth: usize, father_node: &mut Dir) {
+		//foreach directory entry
         for entry in read_dir(path).unwrap() {
+			//directory entry of OS (subnode of initial path)
             let dir = entry.unwrap();
+			//path of directory entry
             let path = dir.path();
+			//conversion to string of the path
             let path_str = path.to_str().unwrap();
+			//take only filename
             let filename_str = path.file_name().unwrap().to_str().unwrap();
-
-            //pretty print for debug of file system
-            {
-                let mut indentation = String::new();
-                for _ in 0..depth {
-                    indentation += " ";
-                }
-                println!("{}{:?}", indentation, filename_str);
-            }
-
+			//check if path is a directory
             if path.is_dir() {
                 //create current node element
                 let mut current_dir = Dir {
@@ -84,35 +80,40 @@ impl FileSystem {
                     creation_time: current_time().as_secs(),
                     children: Vec::new(),
                 };
-                //recursively visit subdirectories
+                //recursively visit subdirectories to fill children vector
                 FileSystem::read_dir_r(path_str, depth + 1, &mut current_dir);
-                //push into file system current directory
                 let current_node = Node::Dir(current_dir);
+				//push into filesystem the current (already created) directory
                 father_node.children.push(current_node);
             } else {
                 //create current node element (need to read the file)
                 let mut f = std::fs::File::open(path_str).unwrap();
+				//create a buffer where to store file contents
                 let mut buffer: Vec<u8> = Vec::new();
+				//save the file contents
                 f.read_to_end(&mut buffer).unwrap();
+				//simple check for file type (actually more complex)
                 let f_type = if &filename_str[filename_str.len() - 3..] == "txt" {
                     FileType::Text
                 } else {
                     FileType::Binary
                 };
+				//create current node element
                 let current_file = File {
                     name: String::from(filename_str),
                     content: buffer,
                     creation_time: current_time().as_secs(),
                     type_: f_type,
                 };
-                //push into file system current directory
                 let current_node = Node::File(current_file);
+				//push into file system current (already created) file
                 father_node.children.push(current_node);
             }
         }
     }
 
     fn from_dir(path: &str) -> FileSystem {
+		//create root of filesystem
         let mut root = FileSystem {
             root: Dir {
                 name: String::from("root"),
@@ -120,18 +121,21 @@ impl FileSystem {
                 children: Vec::new(),
             },
         };
-
+		//recursively read directories
         FileSystem::read_dir_r(path, 0, &mut root.root);
 
         return root;
     }
     
     fn traverse_dirs(mut current_dir: &mut Dir, depth: usize, path_vec:Vec<String>)->Result<&mut Dir,&str>{
-        //assume that path passed is the father directori of the element to modify
+        //assume that path passed is the father directory 
+		//of the element to CRUM
+		//ex. to CRUM file A/B/C/filename
+		//you can use this function to get &mut Dir to C
         for i in 0..depth {
             current_dir = 
                 //inizio espressione di match
-                match current_dir.children.iter_mut().find(|el| match el {Node::Dir(dir) => {if dir.name == path_vec[i] {true} else {false}},Node::File(_file) => false})
+                match current_dir.children.iter_mut().find(|path_el| match path_el {Node::Dir(dir) => {if dir.name == path_vec[i] {true} else {false}},Node::File(_file) => false})
                 {
                     Some(find)=>{
                         match find{
@@ -148,13 +152,13 @@ impl FileSystem {
     }
 
     fn mk_dir(&mut self, path: &str) {
-        //setup variables for traverse directories
+        //setup variables to traverse directories
         let path_buf = PathBuf::from(path);
         let length = path_buf.components().count();
         let path_vec: Vec<String> = path_buf
             .clone()
             .iter()
-            .map(|el| el.to_string_lossy().to_string())
+            .map(|path_el| path_el.to_string_lossy().to_string())
             .collect();
 
         //dummy value to check for path errors
@@ -169,13 +173,14 @@ impl FileSystem {
         if current_dir.name == ""{
             return ;
         }
-        //insert of new directory
+        //create new directory
         let new_dir = Dir {
             name: path_vec[length - 1].clone(),
             creation_time: current_time().as_secs(),
             children: Vec::new(),
         };
-        println!("Directory: {:?} successfully created",path);
+        println!("Directory {:?} successfully created",path);
+		//insert new directory
         current_dir.children.push(Node::Dir(new_dir));
     }
 
@@ -186,7 +191,7 @@ impl FileSystem {
         let path_vec: Vec<String> = path_buf
             .clone()
             .iter()
-            .map(|el| el.to_string_lossy().to_string())
+            .map(|path_el| path_el.to_string_lossy().to_string())
             .collect();
         //dummy value to check for path errors
         let dummy = &mut Dir{name:String::from(""),creation_time:0,children:Vec::new()};
@@ -200,17 +205,18 @@ impl FileSystem {
         if current_dir.name == ""{
             return ;
         }
-        //retain all children except the one whose name is the last in path
-        let mut removed = false;
-        current_dir.children.retain(|el|{
-            match el{
+        
+        let mut status = 1;
+		//retain all children except the one (of type directory) whose name is the last in path (if empty)
+        current_dir.children.retain(|node|{
+            match node{
                 Node::Dir(dir)=>{
-                    if path_vec[length-1]==dir.name{
+                    if path_vec[length-1] == dir.name {
                         if dir.children.is_empty(){
-                            removed=true;
+                            status = 0;
                             false
                         }else{
-                            eprintln!("Directory: {:?} isn't empty",path_buf);
+							status = 2;
                             true
                         }
                     }else{
@@ -220,12 +226,14 @@ impl FileSystem {
                 Node::File(_file)=>{true}
             }
         });
-
-        if removed{
+		//error (success) message
+        if status == 0 {
             println!("Directory {:?} successfully removed",path);
-        }else{
-            eprintln!("Directory {:?} doesn't exist",path);
-        }
+        }else if status == 1{
+            eprintln!("Directory {:?} not found",path);
+        }else if status == 2{
+			eprintln!("Directory {:?} isn't empty",path);
+		}
     }
 
     fn new_file(&mut self, path: &str, file: File) {
@@ -235,11 +243,10 @@ impl FileSystem {
         let path_vec: Vec<String> = path_buf
             .clone()
             .iter()
-            .map(|el| el.to_string_lossy().to_string())
+            .map(|path_el| path_el.to_string_lossy().to_string())
             .collect();
         //dummy value to check for path errors
         let dummy = &mut Dir{name:String::from(""),creation_time:0,children:Vec::new()};
-
         //depth of the new dir is len because of countig first children dir in root as depth 0 
         //so to put in root path must be ""
         let current_dir = match FileSystem::traverse_dirs(&mut self.root, length, path_vec.clone()){
@@ -250,8 +257,8 @@ impl FileSystem {
         if current_dir.name == ""{
             return ;
         };
-        //insert of new file
-        println!("File: {:?} successfully created",file.name);
+        println!("File {:?} successfully created",file.name);
+		//insert new file
         current_dir.children.push(Node::File(file));
 
     }
@@ -263,11 +270,10 @@ impl FileSystem {
         let path_vec: Vec<String> = path_buf
             .clone()
             .iter()
-            .map(|el| el.to_string_lossy().to_string())
+            .map(|path_el| path_el.to_string_lossy().to_string())
             .collect();
         //dummy value to check for path errors
         let dummy = &mut Dir{name:String::from(""),creation_time:0,children:Vec::new()};
-
         //depth of the new dir is len-1 because of countig first children dir in root as depth 0 
         //and to not try to traverse the new directory
         let current_dir = match FileSystem::traverse_dirs(&mut self.root, length-1, path_vec.clone()){
@@ -278,16 +284,17 @@ impl FileSystem {
         if current_dir.name == ""{
             return ;
         };
-        //retain all children except the one whose name is the last in path
-        let mut removed = false;
-        current_dir.children.retain(|el|{
-            match el{
+
+		let mut status = 1;
+        //retain all children except the one (of type file) whose name is the last in path
+        current_dir.children.retain(|node|{
+            match node{
                 Node::Dir(_dir)=>{
                     true
                 },
                 Node::File(file)=>{
-                    if path_vec[length-1]==file.name{
-                        removed = true;
+                    if path_vec[length-1] == file.name{
+                        status = 0;
                         false
                     }else{
                         true
@@ -296,10 +303,10 @@ impl FileSystem {
             }
         });
 
-        if removed{
+        if status == 0 {
             println!("File {:?} successfully removed",path);
-        }else{
-            eprintln!("File {:?} doesn't exist",path);
+        }else if status == 1{
+            eprintln!("File {:?} not found",path);
         }
     }
 
@@ -319,7 +326,8 @@ impl FileSystem {
         //and to not try to traverse the new directory
         match FileSystem::traverse_dirs(&mut self.root, length-1, path_vec.clone()){
             Ok(dir) => {
-                match dir.children.iter_mut().find(|el| match el {Node::Dir(_dir) => false,Node::File(file) => {if file.name == path_vec[length-1] {true} else {false}}})
+				//if path exist I still need to find the file in directory
+                match dir.children.iter_mut().find(|path_el| match path_el {Node::Dir(_dir) => false,Node::File(file) => {if file.name == path_vec[length-1] {true} else {false}}})
                 {
                     Some(find)=>{
                         match find{
@@ -328,104 +336,89 @@ impl FileSystem {
                         }
                     },
                     None => {
-                        eprintln!("File not found in directory {:?}",path);
+                        eprintln!("File {:?} not found",path);
                         None
                     }
                 }
             },
             Err(e) => {eprintln!("{}: {:?}",e,path); None}
         } 
-    }
+    }  
 
     fn search<'a>(&'a mut self,queries: &[&'a str]) -> Option<MatchResult<'a>>{
 
         let mut mr=MatchResult{queries:Vec::new(),nodes:Vec::new()};
+		//mut reference to all filesystem
         let mut unvisited_dir = vec![&mut self.root];
 
         for query in queries{
-            let mut query_s = query.split(":").collect::<Vec<&str>>();
+			//parsing the query
+            let query_s = query.split(":").collect::<Vec<&str>>();
+			//all query stored in MatchResult
             mr.queries.push(query);
-
+			//are there directory to visit?
             while unvisited_dir.len()>0{
-                let mut current = unvisited_dir.remove(0);
+				//current become first directory waiting to be visited --> pop
+                let current = unvisited_dir.remove(0);
+				//can obtain an itermut over children since current directory is mutable 
                 for child in current.children.iter_mut(){
-                    match query_s[0]{
-                        "name"=>{
-                            match child {
-                                Node::File(file)=>{
-                                    if file.name==query_s[1]{
+					    
+                    match child {
+                        Node::File(file)=>{
+							//based on query field filter ([0]) I must perform different filtering on files
+							match query_s[0]{
+								"name"=>{
+    	                            if file.name == query_s[1] {
                                         mr.nodes.push(child)
-                                    }
-                                },
-                                Node::Dir(dir)=>unvisited_dir.push(dir)   
-                            };
-                        },
-                        
-                        "content"=>{
-                            match child {
-                                Node::File(file)=>{
-                                    if String::from_utf8_lossy(&file.content[..]).contains(query_s[1]){
+                                	}
+								},
+								"content"=>{
+									if String::from_utf8_lossy(&file.content[..]).contains(query_s[1]){
                                         mr.nodes.push(child)
-                                    }
-                                },
-                                Node::Dir(dir)=>unvisited_dir.push(dir)
+                                	}
+								},
+								"larger"=>{
+									let value=query_s[1].parse::<usize>().unwrap();
+									if file.content.len() > value{
+										mr.nodes.push(child)
+									}
+								},
+								"smaller"=>{
+									let value=query_s[1].parse::<usize>().unwrap();
+									if file.content.len() < value{
+										mr.nodes.push(child)
+									}
+								},
+								"newer"=>{
+									let value=query_s[1].parse::<u64>().unwrap();
+									if file.creation_time < value{
+										mr.nodes.push(child)
+									}
+								},
+								"older"=>{
+									let value=query_s[1].parse::<u64>().unwrap();
+									if file.creation_time > value{
+										mr.nodes.push(child)
+									}
+								},
+								_=>{
+									eprintln!("Invalid query"); 
+									return None;
+								}
                             }
-                        },
-                    
-                        "larger"=>{
-                            let value=query_s[1].parse::<usize>().unwrap();
-                            match child {
-                                Node::File(file)=>{
-                                    if file.content.len() > value{
-                                        mr.nodes.push(child)
-                                    }
-                                },
-                                Node::Dir(dir)=>unvisited_dir.push(dir)   
-                            };
-                        },
-                        "smaller"=>{
-                            let value=query_s[1].parse::<usize>().unwrap();
-                            match child {
-                                Node::File(file)=>{
-                                    if file.content.len() < value{
-                                        mr.nodes.push(child)
-                                    }
-                                },
-                                Node::Dir(dir)=>unvisited_dir.push(dir)   
-                            };
-                        },
-                        "newer"=>{
-                            let value=query_s[1].parse::<u64>().unwrap();
-                            match child {
-                                Node::File(file)=>{
-                                    if file.creation_time < value{
-                                        mr.nodes.push(child)
-                                    }
-                                },
-                                Node::Dir(dir)=>unvisited_dir.push(dir)   
-                            };
-                        },
-                        "older"=>{
-                            let value=query_s[1].parse::<u64>().unwrap();
-                            match child {
-                                Node::File(file)=>{
-                                    if file.creation_time > value{
-                                        mr.nodes.push(child)
-                                    }
-                                },
-                                Node::Dir(dir)=>unvisited_dir.push(dir)   
-                            };
-                        },
-                        
-                        _=>{
-                            eprintln!("Invalid query"); 
-                            return None;
-                        }
-                    };
-
+						},
+                    	Node::Dir(dir) => {
+							//BFS
+							//in case matched node is a directory then I need to push it to the list of unvisited 
+							//unvisited_dir now contains a reference to a child of the current directory
+							//but this reference is not going to be visited (try to be owned by another variable than current) 
+							//until all children are inserted into the unvisited list and so I can throw away current
+							//--> only one mutable reference at is used at a time
+							unvisited_dir.push(dir);
+						}
+                    }
                 }
             }
-
         }
         if mr.nodes.len()>0 {
             //elimina duplicati per indirizzo
@@ -437,6 +430,7 @@ impl FileSystem {
         }
     }
 }
+
 
 fn main() {
     //test
