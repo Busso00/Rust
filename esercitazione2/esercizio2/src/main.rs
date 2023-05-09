@@ -346,11 +346,11 @@ impl FileSystem {
     }  
 
     fn search<'a>(&'a mut self,queries: &[&'a str]) -> Option<MatchResult<'a>>{
-
+        //struct to store query and results
         let mut mr=MatchResult{queries:Vec::new(),nodes:Vec::new()};
 		//mut reference to all filesystem
         let mut unvisited_dir = vec![&mut self.root];
-
+        //applying all the queries
         for query in queries{
 			//parsing the query
             let query_s = query.split(":").collect::<Vec<&str>>();
@@ -362,15 +362,14 @@ impl FileSystem {
                 let current = unvisited_dir.remove(0);
 				//can obtain an itermut over children since current directory is mutable 
                 for child in current.children.iter_mut(){
-					    
                     match child {
                         Node::File(file)=>{
-							//based on query field filter ([0]) I must perform different filtering on files
-							match query_s[0]{
+                            //based on query field filter ([0]) I must perform different filtering on files
+                            match query_s[0]{
 								"name"=>{
     	                            if file.name == query_s[1] {
                                         mr.nodes.push(child)
-                                	}
+                                    }
 								},
 								"content"=>{
 									if String::from_utf8_lossy(&file.content[..]).contains(query_s[1]){
@@ -406,7 +405,7 @@ impl FileSystem {
 									return None;
 								}
                             }
-						},
+                        },
                     	Node::Dir(dir) => {
 							//BFS
 							//in case matched node is a directory then I need to push it to the list of unvisited 
