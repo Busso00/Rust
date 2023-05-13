@@ -1,0 +1,12 @@
+/home/federico/PoliTO/Rust_Git/Rust/esercitazione3/esercizio1/target/debug/deps/anstyle-c10214261dfc80f2.rmeta: /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/lib.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/macros.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/color.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/effect.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/reset.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/style.rs
+
+/home/federico/PoliTO/Rust_Git/Rust/esercitazione3/esercizio1/target/debug/deps/libanstyle-c10214261dfc80f2.rlib: /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/lib.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/macros.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/color.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/effect.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/reset.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/style.rs
+
+/home/federico/PoliTO/Rust_Git/Rust/esercitazione3/esercizio1/target/debug/deps/anstyle-c10214261dfc80f2.d: /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/lib.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/macros.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/color.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/effect.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/reset.rs /home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/style.rs
+
+/home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/lib.rs:
+/home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/macros.rs:
+/home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/color.rs:
+/home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/effect.rs:
+/home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/reset.rs:
+/home/federico/.cargo/registry/src/github.com-1ecc6299db9ec823/anstyle-1.0.0/src/style.rs:
