@@ -68,7 +68,7 @@ fn main() {
         let sd = SensorData {
             seq : i,
             values : rng.gen(),
-            timestamp : //only to be more realistic, not required
+            timestamp : 0//only to be more realistic, not required
         };
         //debug output
         println!("{:?}",sd);
