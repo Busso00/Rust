@@ -368,86 +368,85 @@ impl FileSystem {
                 let mut current = unvisited_dir.remove(0);
 				//can obtain an itermut over children since current directory is mutable 
                 
-                        current.borrow().children.iter().map(|child| (Rc::new(RefCell::new(child.clone())))).for_each(|child| {
-                            match child.borrow().deref() {
-                                Node::File(file)=>{
-                                    //based on query field filter ([0]) I must perform different filtering on files
-                                    match query_s[0]{
-                                        "name"=>{
-                                            if file.name == query_s[1] {
-                                                mr.nodes.push(Rc::clone(&child));
-                                            }
-                                        },
-                                        "content"=>{
-                                            if String::from_utf8_lossy(&file.content[..]).contains(query_s[1]){
-                                                mr.nodes.push(Rc::clone(&child));
-                                            }
-                                        },
-                                        "larger"=>{
-                                            let value=query_s[1].parse::<usize>().unwrap();
-                                            if file.content.len() > value{
-                                                mr.nodes.push(Rc::clone(&child));
-                                            }
-                                        },
-                                        "smaller"=>{
-                                            let value=query_s[1].parse::<usize>().unwrap();
-                                            if file.content.len() < value{
-                                                mr.nodes.push(Rc::clone(&child));
-                                            }
-                                        },
-                                        "newer"=>{
-                                            let value=query_s[1].parse::<u64>().unwrap();
-                                            if file.creation_time < value{
-                                                mr.nodes.push(Rc::clone(&child));
-                                            }
-                                        },
-                                        "older"=>{
-                                            let value=query_s[1].parse::<u64>().unwrap();
-                                            if file.creation_time > value{
-                                                mr.nodes.push(Rc::clone(&child));
-                                            }
-                                        },
-                                        _=>{
-                                            eprintln!("Invalid query"); 
+                current.borrow().children.iter().map(|child| (Rc::new(RefCell::new(child.clone())))).for_each(|child| {
+                    match child.borrow().deref() {
+                        Node::File(file)=>{
+                            //based on query field filter ([0]) I must perform different filtering on files
+                            match query_s[0]{
+                                    "name"=>{
+                                        if file.name == query_s[1] {
+                                            mr.nodes.push(Rc::clone(&child));
                                         }
-                                    }
-                                },
-                                Node::Dir(dir) => {
-                                    //BFS
-                                    //in case matched node is a directory then I need to push it to the list of unvisited 
-                                    //unvisited_dir now contains a reference to a child of the current directory
-                                    //but this reference is not going to be visited (try to be owned by another variable than current) 
-                                    //until all children are inserted into the unvisited list and so I can throw away current
-                                    //--> only one mutable reference at is used at a time
-                                    match query_s[0]{
-                                        "name"=>{
-                                            if dir.name == query_s[1] {
-                                                mr.nodes.push(Rc::clone(&child));
-                                            }
-                                        },
-                                        "newer"=>{
-                                            let value=query_s[1].parse::<u64>().unwrap();
-                                            if dir.creation_time < value{
-                                                mr.nodes.push(Rc::clone(&child));
-                                            }
-                                        },
-                                        "older"=>{
-                                            let value=query_s[1].parse::<u64>().unwrap();
-                                            if dir.creation_time > value{
-                                                mr.nodes.push(Rc::clone(&child));
-                                            }
-                                        },
-                                        _=>{
-                                           
+                                    },
+                                    "content"=>{
+                                        if String::from_utf8_lossy(&file.content[..]).contains(query_s[1]){
+                                            mr.nodes.push(Rc::clone(&child));
                                         }
-                                    
+                                    },
+                                    "larger"=>{
+                                        let value=query_s[1].parse::<usize>().unwrap();
+                                        if file.content.len() > value{
+                                            mr.nodes.push(Rc::clone(&child));
+                                        }
+                                    },
+                                    "smaller"=>{
+                                        let value=query_s[1].parse::<usize>().unwrap();
+                                        if file.content.len() < value{
+                                            mr.nodes.push(Rc::clone(&child));
+                                        }
+                                    },
+                                    "newer"=>{
+                                        let value=query_s[1].parse::<u64>().unwrap();
+                                        if file.creation_time < value{
+                                            mr.nodes.push(Rc::clone(&child));
+                                        }
+                                    },
+                                    "older"=>{
+                                        let value=query_s[1].parse::<u64>().unwrap();
+                                        if file.creation_time > value{
+                                            mr.nodes.push(Rc::clone(&child));
+                                        }
+                                    },
+                                    _=>{
+                                        eprintln!("Invalid query"); 
                                     }
-                                    unvisited_dir.push(Rc::new(RefCell::new(dir.clone())));
                                 }
+                            },
+                            Node::Dir(dir) => {
+                                //BFS
+                                //in case matched node is a directory then I need to push it to the list of unvisited 
+                                //unvisited_dir now contains a reference to a child of the current directory
+                                //but this reference is not going to be visited (try to be owned by another variable than current) 
+                                //until all children are inserted into the unvisited list and so I can throw away current
+                                //--> only one mutable reference at is used at a time
+                                match query_s[0]{
+                                    "name"=>{
+                                        if dir.name == query_s[1] {
+                                            mr.nodes.push(Rc::clone(&child));
+                                        }
+                                    },
+                                    "newer"=>{
+                                        let value=query_s[1].parse::<u64>().unwrap();
+                                        if dir.creation_time < value{
+                                            mr.nodes.push(Rc::clone(&child));
+                                        }
+                                    },
+                                    "older"=>{
+                                        let value=query_s[1].parse::<u64>().unwrap();
+                                        if dir.creation_time > value{
+                                            mr.nodes.push(Rc::clone(&child));
+                                        }
+                                    },
+                                    _=>{
+                                         
+                                    }
+                                    
+                                }
+                                unvisited_dir.push(Rc::new(RefCell::new(dir.clone())));
                             }
-                        });
-                    
-                
+                        }
+                    }
+                );                      
             }
         }
 
